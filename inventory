@@ -1,0 +1,10 @@
+[aws]
+aws-instance ansible_host=3.94.184.139 ansible_user=ubuntu ansible_ssh_private_key_file=/home/ubuntu/q.pem
+
+[azure]
+azure-instance ansible_host=48.217.49.46 ansible_user=azureuser ansible_ssh_private_key_file=/home/ubuntu/vmmachine.pem
+
+[all:vars]
+ansible_python_interpreter=/usr/bin/python3
+
+~                                                      
