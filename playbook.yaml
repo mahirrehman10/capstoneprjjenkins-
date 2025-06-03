@@ -1,0 +1,51 @@
+---
+- name: Configure Nginx on cloud instances with custom welcome pages
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install Nginx
+      apt:
+        name: nginx
+        state: present
+
+    - name: Copy AWS custom index.html
+      copy:
+        src: ./indexaws.html
+        dest: /var/www/html/index.html
+        owner: www-data
+        group: www-data
+        mode: "0644"
+      when: "'aws' in group_names"
+
+    - name: Copy Azure custom index.html
+      copy:
+        src: ./indexazure.html
+                owner: www-data
+        group: www-data
+        mode: "0644"
+      when: "'aws' in group_names"
+
+    - name: Copy Azure custom index.html
+      copy:
+        src: ./indexazure.html
+        dest: /var/www/html/index.html
+        owner: www-data
+        group: www-data
+        mode: "0644"
+      when: "'azure' in group_names"
+
+    - name: Ensure Nginx is started and enabled
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+
+    - name: Reload Nginx to apply changes
+      service:
+        name: nginx
+        state: reloaded
