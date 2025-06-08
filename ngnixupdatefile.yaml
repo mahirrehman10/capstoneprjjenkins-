@@ -1,0 +1,33 @@
+---
+- name: Configure Nginx on AWS instance with custom welcome page
+  hosts: aws
+  become: yes
+
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install Nginx
+      apt:
+        name: nginx
+        state: present
+
+    - name: Copy custom AWS index.html to Nginx web directory
+      copy:
+        src: ./index.html
+        dest: /var/www/html/index.html
+        owner: www-data
+        group: www-data
+        mode: "0644"
+
+    - name: Ensure Nginx is started and enabled
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+
+    - name: Reload Nginx to apply changes
+      service:
+        name: nginx
+        state: reloaded

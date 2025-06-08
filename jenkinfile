@@ -1,0 +1,46 @@
+pipeline {
+    agent any
+
+    environment {
+        GIT_REPO = 'https://github.com/mahirrehman10/capstoneprjjenkins-.git'
+        AWS_USER = 'ubuntu'
+        AWS_IP = 'your.aws.vm.ip'
+        AZURE_USER = 'azureuser'
+        AZURE_IP = 'your.azure.vm.ip'
+    }
+
+    stages {
+        stage('Clone Repository') {
+            steps {
+                git "${GIT_REPO}"
+            }
+        }
+
+        stage('Deploy to AWS') {
+            steps {
+                sh """
+                scp index-aws.html ${AWS_USER}@${AWS_IP}:/tmp/index.html
+                ssh ${AWS_USER}@${AWS_IP} 'sudo mv /tmp/index.html /var/www/html/index.html && sudo systemctl restart nginx'
+                """
+            }
+        }
+
+        stage('Deploy to Azure') {
+            steps {
+                sh """
+                scp index-azure.html ${AZURE_USER}@${AZURE_IP}:/tmp/index.html
+                ssh ${AZURE_USER}@${AZURE_IP} 'sudo mv /tmp/index.html /var/www/html/index.html && sudo systemctl restart nginx'
+                """
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Deployment successful.'
+        }
+        failure {
+            echo 'Deployment failed.'
+        }
+    }
+}
